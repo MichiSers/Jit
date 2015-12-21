@@ -10,6 +10,12 @@ public class ContentStream implements Serializable
 
 	File file = new File("C:\\Users\\Michi\\workspace\\Jit\\Content.txt");
 	byte[] bFile = new byte[(int) file.length()];
+	
+	public void showHash(byte[] content){
+		String s = HashAlgorithmExample.byteArrayToHexString(content);
+		
+		System.out.println(s);
+	}
 
 	public void readFile()
 	{
@@ -19,6 +25,7 @@ public class ContentStream implements Serializable
 			fileInputStream = new FileInputStream(file);
 			fileInputStream.read(bFile);
 			fileInputStream.close();
+			showHash(bFile);
 
 			for (int i = 0; i < bFile.length; i++)
 			{
