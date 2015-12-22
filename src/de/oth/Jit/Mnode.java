@@ -3,6 +3,7 @@ package de.oth.Jit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class Mnode
 	List<Mnode> leafs;
 	File dir;
 	String hash;
+	String target;
 
 	public Mnode(File dir)
 	{
@@ -44,7 +46,8 @@ public class Mnode
 			{
 				children.add(currentChild);
 				currentChild.addElement(files);
-			}else{
+			} else
+			{
 				int i = children.indexOf(currentChild);
 				children.get(i).addElement(files);
 			}
@@ -53,50 +56,6 @@ public class Mnode
 
 	public void computeHash()
 	{
-		
-		
-
-		if (isLeaf())
-		{
-			FileInputStream fileInputStream = null;
-
-			byte[] bFile = new byte[(int) dir.length()];
-			
-				try
-				{
-					fileInputStream = new FileInputStream(dir);
-					fileInputStream.read(bFile);
-					fileInputStream.close();
-					hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-					System.out.println(hash);
-
-					for (int i = 0; i < bFile.length; i++)
-					{
-						System.out.print((char) bFile[i]);
-					}
-					
-					System.out.println("\n");
-
-				} catch (Exception e)
-				{
-					e.printStackTrace();
-				}
-			}else{
-				String out = dir.getName();
-//				String a = "C:/Users/Michi/workspace/Jit/.jit/objects/NEWFILE.txt";
-				String a = "./.jit/objects/NEWFILE.txt";
-				File n = new File(a);
-				try
-				{
-					n.createNewFile();
-				} catch (IOException e)
-				{
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-			}
-		
 		for (Mnode n : leafs)
 		{
 			n.computeHash();
@@ -107,6 +66,106 @@ public class Mnode
 			n.computeHash();
 		}
 
+		if (isLeaf())
+		{
+			FileInputStream fileInputStream = null;
+
+			byte[] bFile = new byte[(int) dir.length()];
+
+			try
+			{
+				fileInputStream = new FileInputStream(dir);
+				fileInputStream.read(bFile);
+				fileInputStream.close();
+				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
+//				System.out.println(hash);
+
+				for (int i = 0; i < bFile.length; i++)
+				{
+					System.out.print((char) bFile[i]);
+				}
+
+				System.out.println("\n");
+
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+
+			target = "./.jit/objects/" + hash;
+			File result = new File(target);
+			try
+			{
+				Files.write(result.toPath(), bFile);
+				result.createNewFile();
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		} else
+		{
+			List<String> lines = new ArrayList<String>();
+			for (Mnode n : leafs)
+			{
+				System.out.println(n.hash);
+				lines.add(n.hash);
+
+			}
+
+			for (Mnode n : children)
+			{
+				n.computeHash();
+			}
+
+			File dummy = new File("dummy");
+
+			try
+			{
+				Files.write(dummy.toPath(), lines);
+			} catch (IOException e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			FileInputStream fileInputStream = null;
+
+			byte[] bFile = new byte[(int) dummy.length()];
+
+			try
+			{
+				fileInputStream = new FileInputStream(dummy);
+				fileInputStream.read(bFile);
+				fileInputStream.close();
+				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
+//				System.out.println(hash);
+
+				for (int i = 0; i < bFile.length; i++)
+				{
+					System.out.print((char) bFile[i]);
+				}
+
+				System.out.println("\n");
+
+			} catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+
+			target = "./.jit/objects/" + hash;
+			File result = new File(target);
+			try
+			{
+				Files.write(result.toPath(), bFile);
+				result.createNewFile();
+			} catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 	public void printNode()
