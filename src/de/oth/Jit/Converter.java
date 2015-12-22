@@ -16,8 +16,12 @@ public class Converter
 		Jit jit = new Jit();
 		jit.init();
 		String path = "src/de/oth/Jit/convert.txt";
+		String path2 = "src/de/oth/convert.txt";
 		File arg = new File(path);
+		File arg2 = new File(path2);
 		jit.add(arg);
+		jit.add(arg2);
+		jit.commit();
 		
 	}
 }

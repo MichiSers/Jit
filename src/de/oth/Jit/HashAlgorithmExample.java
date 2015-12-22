@@ -19,7 +19,6 @@ public class HashAlgorithmExample {
         } catch (NoSuchAlgorithmException ex) {
             // do something
         }
-        
         return "";
     }
 }

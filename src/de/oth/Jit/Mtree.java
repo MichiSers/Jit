@@ -18,11 +18,15 @@ public class Mtree
 		
 		while(path != null){
 			files.add(path);
-			System.out.println(path.toString());
+//			System.out.println(path.toString());
 			path = path.getParentFile();
 		}
 		
 		root.addElement(files);
+	}
+	
+	public void computeHash(){
+		root.computeHash();
 	}
 	
 	public void print(){

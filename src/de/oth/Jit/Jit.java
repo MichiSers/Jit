@@ -127,7 +127,7 @@ public class Jit
 
 	public void commit()
 	{
-
+		tree.computeHash();
 	}
 
 	public void checkout()
