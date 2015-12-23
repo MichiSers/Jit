@@ -49,12 +49,41 @@ public class Mnode
 		{
 			if (!(children.contains(currentChild)))
 			{
+
 				children.add(currentChild);
 				currentChild.addElement(files);
 			} else
 			{
 				int i = children.indexOf(currentChild);
 				children.get(i).addElement(files);
+			}
+		}
+	}
+
+	public void removeElement(List<File> files)
+	{
+		int index = files.size() - 1;
+		// System.out.println(files.get(index));
+		Mnode currentNode = new Mnode(files.get(index));
+		files.remove(index);
+		index--;
+		if (index < 0)
+		{
+			int i = leafs.indexOf(currentNode);
+			Mnode org = leafs.get(i);
+			System.out.println(org);
+			System.out.println("removing " + leafs.get(i));
+			leafs.remove(i);
+		} else
+		{
+			int i = children.indexOf(currentNode);
+			Mnode org = children.get(i);
+			System.out.println(org);
+			children.get(i).removeElement(files);
+			if (children.get(i).children.isEmpty() && children.get(i).leafs.isEmpty())
+			{
+				System.out.println("removing " + children.get(i));
+				children.remove(i);
 			}
 		}
 	}
@@ -92,11 +121,6 @@ public class Mnode
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
 				System.out.println("Leaf: " + hash);
-
-				// for (int i = 0; i < bFile.length; i++)
-				// {
-				// System.out.print((char) bFile[i]);
-				// }
 
 				System.out.println("\n");
 
@@ -187,7 +211,7 @@ public class Mnode
 
 	public void printNode()
 	{
-		System.out.println(this);
+		System.out.println(dir);
 
 		for (Mnode n : leafs)
 		{

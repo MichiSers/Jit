@@ -66,8 +66,11 @@ public class Jit
 
 	}
 
-	public void remove()
+	public void remove(File p)
 	{
+		tree.removeElement(p);
+		
+		tree.print();
 
 	}
 
@@ -85,7 +88,7 @@ public class Jit
 		{
 			deleteFolder(dummy);
 		}
-//		recreateFile(file, basePath);
+		recreateFile(file, basePath);
 
 	}
 
@@ -93,7 +96,6 @@ public class Jit
 	{
 		String jitPath = ".jit";
 		File jit = new File(jitPath);
-		System.out.println(jit.getName());
 		File[] files = folder.listFiles();
 		files = folder.listFiles(new FileFilter(){
 
