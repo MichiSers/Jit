@@ -15,6 +15,7 @@ import java.util.List;
 
 public class Jit
 {
+	
 	HashMap<Integer, Mnode> map = new HashMap<Integer, Mnode>();
 	ArrayList<Mnode> children = new ArrayList<Mnode>();
 
@@ -29,11 +30,15 @@ public class Jit
 	Mtree tree;
 
 	List<File> list = new ArrayList<File>();
+	
+	public Jit(){
+		tree = new Mtree(head);
+	}
 
 	public void init()
 	{
 
-		tree = new Mtree(head);
+		
 		File currentFolder = new File(".");
 		File workingFolder = new File(currentFolder, ".jit");
 		File objects = new File(workingFolder, "objects");
