@@ -1,24 +1,24 @@
 package de.oth.Jit;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Jit
 {
-	HashMap<Integer,Mnode> map = new HashMap<Integer,Mnode>();
+	HashMap<Integer, Mnode> map = new HashMap<Integer, Mnode>();
 	ArrayList<Mnode> children = new ArrayList<Mnode>();
 
 	FileInputStream fileInputStream;
-//	JitFile jitFile;
+	// JitFile jitFile;
 	Mnode head = new Mnode(new File("commit"));
 	Mnode Mnode;
 	String hash;
@@ -26,9 +26,9 @@ public class Jit
 	File file;
 	byte[] bFile;
 	Mtree tree;
-	
+
 	List<File> list = new ArrayList<File>();
-	
+
 	public void init()
 	{
 
@@ -55,83 +55,75 @@ public class Jit
 		}
 
 	}
-	
+
 	public void add(File p)
 	{
 		// String base = "C:/Users/Michi/workspace/Jit/";
 		tree.addElement(p);
 
 		tree.print();
-	
+
 	}
-
-
-//	public void add(File p)
-//	{
-//		// String base = "C:/Users/Michi/workspace/Jit/";
-//		
-//		ArrayList<Mnode> children = new ArrayList<Mnode>();
-//
-//		FileInputStream fileInputStream;
-//		String hash;
-//		File newFile;
-//		File file = p;
-//		byte[] bFile;
-//
-//		while (p != null)
-//		{
-//			bFile = new byte[(int) file.length()];
-//
-//			if (p.isFile())
-//			{
-//				try
-//				{
-//					fileInputStream = new FileInputStream(file);
-//					fileInputStream.read(bFile);
-//					fileInputStream.close();
-//
-//					System.out.println("Done");
-//
-//				} catch (Exception e)
-//				{
-//					e.printStackTrace();
-//				}
-//
-//				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-//				children.add(new JitFile(hash));
-//			}else if(p.isDirectory()){
-//				
-//				
-//				newFile = new File("dummy");
-////				Files.write(newFile, bytes, options)
-//			}
-//			// newFile = new File(".jit/staging/"+hash);
-//			// try
-//			// {
-//			// newFile.createNewFile();
-//			// } catch (IOException e)
-//			// {
-//			// // TODO Auto-generated catch block
-//			// e.printStackTrace();
-//			// }
-//
-//			p = p.getParentFile();
-//		}
-//
-//	}
 
 	public void remove()
 	{
 
 	}
 
-	public void commit()
+	public void commit(String message)
 	{
-		tree.computeHash();
+		tree.computeHash(message);
 	}
 
-	public void checkout()
+	public void checkout(File file)
 	{
-
+		
+		
+		String[] lines = readFile(file);
+		for(int i = 0; i<lines.length; i++){
+			recreateFile(lines[i]);
+			System.out.println(lines[i]);
+		}
+		
+	}
+	
+	public void recreateFile(String line){
+		String details[] = line.split(";");
+		String base = "./Test";
+		String target = base+"/"+details[2];
+		System.out.println(target);
+		File file = new File(target);
+		if(details[0].equals("Directory")){
+			System.out.println("is dir");
+			file.mkdirs();
+		}
+	}
+	
+	public String[] readFile(File file){
+		boolean firstLine = true;
+		StringBuilder contents = new StringBuilder();
+		try{
+		BufferedReader input = new BufferedReader(new FileReader(file));
+		try{
+			String line = null;
+			
+			while((line = input.readLine()) != null){
+				if(firstLine){
+					firstLine = false;
+				}else{
+				contents.append(line);
+				contents.append(System.getProperty("line.separator"));
+				}
+			}
+		}finally{
+			input.close();
+		}
+		}catch (IOException ex){
+			ex.printStackTrace();
+		}
+		
+		String[] lines = contents.toString().split("\n");
+		
+		return lines;
 	}
 }

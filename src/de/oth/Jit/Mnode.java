@@ -9,17 +9,22 @@ import java.util.List;
 
 public class Mnode
 {
+	boolean isRoot = false;
+	String message = "";
 	List<Mnode> children;
 	List<Mnode> leafs;
 	File dir;
 	String hash;
 	String target;
+	String name;
 
 	public Mnode(File dir)
 	{
 		children = new ArrayList<Mnode>();
 		leafs = new ArrayList<Mnode>();
 		this.dir = dir;
+
+		name = dir.getName();
 	}
 
 	public boolean isLeaf()
@@ -56,24 +61,26 @@ public class Mnode
 
 	public void computeHash()
 	{
-		System.out.println("Computing File "+ dir.toString());
-		
+		System.out.println("Computing File " + dir.toString());
+
 		for (Mnode n : leafs)
 		{
 			n.computeHash();
 		}
-		
+
 		for (Mnode n : children)
 		{
 			n.computeHash();
 		}
-		
-		if(dir.isFile()){
+
+		if (dir.isFile())
+		{
 			FileInputStream fileInputStream = null;
 
 			byte[] bFile = new byte[(int) dir.length()];
-			
-			if(!dir.isFile()){
+
+			if (!dir.isFile())
+			{
 				System.out.println(dir + "Is no file");
 				return;
 			}
@@ -84,12 +91,12 @@ public class Mnode
 				fileInputStream.read(bFile);
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-				System.out.println("Leaf: "+hash);
+				System.out.println("Leaf: " + hash);
 
-//				for (int i = 0; i < bFile.length; i++)
-//				{
-//					System.out.print((char) bFile[i]);
-//				}
+				// for (int i = 0; i < bFile.length; i++)
+				// {
+				// System.out.print((char) bFile[i]);
+				// }
 
 				System.out.println("\n");
 
@@ -109,24 +116,31 @@ public class Mnode
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else{
+		} else
+		{
 
-		
-			
 			List<String> lines = new ArrayList<String>();
+			if (!(isRoot))
+			{
+				lines.add("Directory");
+			} else
+			{
+				lines.add(message);
+			}
 			for (Mnode k : leafs)
 			{
-//				System.out.println(n.hash);
-				lines.add(k.hash);
+				// System.out.println(n.hash);
+				lines.add("File;" + k.hash + ";" + k.name);
 
 			}
 
 			for (Mnode k : children)
 			{
-				lines.add(k.hash);
+				lines.add("Directory;" + k.hash + ";" + k.name);
 			}
 
-			File dummy = new File("dummy");
+			target = "./.jit/staging/dummy";
+			File dummy = new File(target);
 
 			try
 			{
@@ -147,13 +161,8 @@ public class Mnode
 				fileInputStream.read(bFile);
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-				System.out.println("Child: "+hash);
-
-//				for (int i = 0; i < bFile.length; i++)
-//				{
-//					System.out.print((char) bFile[i]);
-//				}
-
+				dummy.delete();
+				System.out.println("Child: " + hash);
 				System.out.println("\n");
 
 			} catch (Exception e)
@@ -172,9 +181,8 @@ public class Mnode
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}		
+		}
 
-		
 	}
 
 	public void printNode()
@@ -235,6 +243,6 @@ public class Mnode
 	@Override
 	public String toString()
 	{
-		return dir.toString();
+		return name;
 	}
 }

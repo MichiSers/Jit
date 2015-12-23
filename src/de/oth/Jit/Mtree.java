@@ -11,6 +11,7 @@ public class Mtree
 	public Mtree(Mnode root){
 		
 		this.root=root;
+		root.isRoot=true;
 	}
 	
 	public void addElement(File path){
@@ -25,7 +26,8 @@ public class Mtree
 		root.addElement(files);
 	}
 	
-	public void computeHash(){
+	public void computeHash(String message){
+		root.message=message;
 		root.computeHash();
 	}
 	
