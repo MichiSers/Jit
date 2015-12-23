@@ -19,7 +19,7 @@ public class Jit
 
 	FileInputStream fileInputStream;
 //	JitFile jitFile;
-	Mnode head = new Mnode(new File("."));
+	Mnode head = new Mnode(new File("commit"));
 	Mnode Mnode;
 	String hash;
 	File newFile;

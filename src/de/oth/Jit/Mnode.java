@@ -56,21 +56,27 @@ public class Mnode
 
 	public void computeHash()
 	{
+		System.out.println("Computing File "+ dir.toString());
+		
 		for (Mnode n : leafs)
 		{
 			n.computeHash();
 		}
-
+		
 		for (Mnode n : children)
 		{
 			n.computeHash();
 		}
-
-		if (isLeaf())
-		{
+		
+		if(dir.isFile()){
 			FileInputStream fileInputStream = null;
 
 			byte[] bFile = new byte[(int) dir.length()];
+			
+			if(!dir.isFile()){
+				System.out.println(dir + "Is no file");
+				return;
+			}
 
 			try
 			{
@@ -78,12 +84,12 @@ public class Mnode
 				fileInputStream.read(bFile);
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-//				System.out.println(hash);
+				System.out.println("Leaf: "+hash);
 
-				for (int i = 0; i < bFile.length; i++)
-				{
-					System.out.print((char) bFile[i]);
-				}
+//				for (int i = 0; i < bFile.length; i++)
+//				{
+//					System.out.print((char) bFile[i]);
+//				}
 
 				System.out.println("\n");
 
@@ -103,20 +109,21 @@ public class Mnode
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}else{
 
-		} else
-		{
+		
+			
 			List<String> lines = new ArrayList<String>();
-			for (Mnode n : leafs)
+			for (Mnode k : leafs)
 			{
-				System.out.println(n.hash);
-				lines.add(n.hash);
+//				System.out.println(n.hash);
+				lines.add(k.hash);
 
 			}
 
-			for (Mnode n : children)
+			for (Mnode k : children)
 			{
-				n.computeHash();
+				lines.add(k.hash);
 			}
 
 			File dummy = new File("dummy");
@@ -140,12 +147,12 @@ public class Mnode
 				fileInputStream.read(bFile);
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-//				System.out.println(hash);
+				System.out.println("Child: "+hash);
 
-				for (int i = 0; i < bFile.length; i++)
-				{
-					System.out.print((char) bFile[i]);
-				}
+//				for (int i = 0; i < bFile.length; i++)
+//				{
+//					System.out.print((char) bFile[i]);
+//				}
 
 				System.out.println("\n");
 
@@ -165,7 +172,9 @@ public class Mnode
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		}		
+
+		
 	}
 
 	public void printNode()
