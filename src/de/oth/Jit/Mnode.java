@@ -3,12 +3,17 @@ package de.oth.Jit;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mnode
+public class Mnode implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	boolean isRoot = false;
 	String message = "";
 	List<Mnode> children;

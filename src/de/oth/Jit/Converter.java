@@ -1,6 +1,7 @@
 package de.oth.Jit;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Converter
 {
@@ -26,7 +27,7 @@ public class Converter
 					return;
 				}
 				File add = new File(args[1]);
-				System.out.println(add);
+//				System.out.println(add);
 				jit.add(add);
 				break;
 
@@ -56,7 +57,21 @@ public class Converter
 				}
 				jit.commit(args[1]);
 				break;
-			
+				
+			case "checkout":
+				if (args.length < 2)
+				{
+					System.out.println("No parameter");
+					return;
+				} else if (args.length > 2)
+				{
+					System.out.println("Too many parameters");
+					return;
+				}
+				File checkout = new File(args[1]);
+				
+				jit.checkout(checkout);
+				
 			default:
 				System.out.println("Not a jit command");
 			}

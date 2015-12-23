@@ -1,12 +1,18 @@
 package de.oth.Jit;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Mtree
+public class Mtree implements Serializable
 {
-	Mnode root;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public Mnode root;
+	private List<File> files;
 
 	public Mtree(Mnode root)
 	{
@@ -17,7 +23,7 @@ public class Mtree
 
 	public void addElement(File path)
 	{
-		List<File> files = new ArrayList<File>();
+		files = new ArrayList<File>();
 
 		while (path != null)
 		{
@@ -31,23 +37,15 @@ public class Mtree
 
 	public void removeElement(File path)
 	{
-		List<File> files = new ArrayList<File>();
+		files = new ArrayList<File>();
 
 		while (path != null)
 		{
 			files.add(path);
-			// System.out.println(path.toString());
 			path = path.getParentFile();
 		}
 
 		String names[] = files.get(files.size() - 1).toString().split("\\\\");
-//		for(File f : files){
-//			System.out.println(f.toString());
-//		}
-//		for (String s : names)
-//		{
-//			System.out.println(s);
-//		}
 		root.removeElement(files);
 
 	}
