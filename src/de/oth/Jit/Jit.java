@@ -2,6 +2,7 @@ package de.oth.Jit;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -77,53 +78,126 @@ public class Jit
 
 	public void checkout(File file)
 	{
-		
-		
-		String[] lines = readFile(file);
-		for(int i = 0; i<lines.length; i++){
-			recreateFile(lines[i]);
-			System.out.println(lines[i]);
+
+		String basePath = "Test";
+		File dummy = new File(basePath);
+		if (dummy.exists())
+		{
+			deleteFolder(dummy);
 		}
-		
+//		recreateFile(file, basePath);
+
 	}
-	
-	public void recreateFile(String line){
-		String details[] = line.split(";");
-		String base = "./Test";
-		String target = base+"/"+details[2];
-		System.out.println(target);
-		File file = new File(target);
-		if(details[0].equals("Directory")){
-			System.out.println("is dir");
-			file.mkdirs();
-		}
-	}
-	
-	public String[] readFile(File file){
-		boolean firstLine = true;
-		StringBuilder contents = new StringBuilder();
-		try{
-		BufferedReader input = new BufferedReader(new FileReader(file));
-		try{
-			String line = null;
+
+	public static void deleteFolder(File folder)
+	{
+		String jitPath = ".jit";
+		File jit = new File(jitPath);
+		System.out.println(jit.getName());
+		File[] files = folder.listFiles();
+		files = folder.listFiles(new FileFilter(){
+
+			@Override
+			public boolean accept(File pathname)
+			{
+				if(pathname.getName().equals(jit.getName())){
+				return false;}
+				else return true;
+			}
 			
-			while((line = input.readLine()) != null){
-				if(firstLine){
-					firstLine = false;
-				}else{
-				contents.append(line);
-				contents.append(System.getProperty("line.separator"));
+		});
+		if (files != null)
+		{ // some JVMs return null for empty dirs
+			for (File f : files)
+			{
+//				if (f.getName() != jit.getName())
+//				{
+					if (f.isDirectory())
+					{
+						deleteFolder(f);
+					} else
+					{
+						f.delete();
+					}
+//				}
+			}
+		}
+		folder.delete();
+	}
+
+	public void recreateFile(File file, String basePath)
+	{
+
+		String[] lines = readFile(file);
+
+		for (int i = 0; i < lines.length; i++)
+		{
+
+			String details[] = lines[i].split(";");
+			details[2] = details[2].trim();
+
+			if (details[0].equals("Directory"))
+			{
+
+				File current = new File(basePath, details[2]);
+				System.out.println(current.mkdirs());
+
+				basePath = basePath + "/" + details[2];
+
+				String nextPath = ".jit/objects/" + details[1];
+				File next = new File(nextPath);
+				recreateFile(next, basePath);
+
+			} else if (details[0].equals("File"))
+			{
+				String oldPath = ".jit/objects/" + details[1];
+				String newPath = basePath + "/" + details[2];
+				File newFile = new File(newPath);
+				File oldFile = new File(oldPath);
+				try
+				{
+					Files.copy(oldFile.toPath(), newFile.toPath());
+				} catch (IOException e)
+				{
+					e.printStackTrace();
 				}
 			}
-		}finally{
-			input.close();
 		}
-		}catch (IOException ex){
+	}
+
+	public String[] readFile(File file)
+	{
+		boolean firstLine = true;
+		StringBuilder contents = new StringBuilder();
+		try
+		{
+			BufferedReader input = new BufferedReader(new FileReader(file));
+			try
+			{
+				String line = null;
+
+				while ((line = input.readLine()) != null)
+				{
+					if (firstLine)
+					{
+						firstLine = false;
+					} else
+					{
+						contents.append(line);
+						contents.append(System.getProperty("line.separator"));
+					}
+				}
+			} finally
+			{
+				input.close();
+			}
+		} catch (IOException ex)
+		{
 			ex.printStackTrace();
 		}
-		
+
 		String[] lines = contents.toString().split("\n");
-		
+
 		return lines;
 	}
 }
