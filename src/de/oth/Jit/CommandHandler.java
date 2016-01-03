@@ -1,9 +1,15 @@
 package de.oth.Jit;
 
 import java.io.File;
-import java.io.IOException;
 
-public class Converter
+
+/**
+ * Handles commands, some basic parameter checks.
+ * Delegates to 'Jit' class.
+ * 
+ * @author Michi
+ */
+public class CommandHandler
 {
 	public static void main(String[] args)
 	{
@@ -27,7 +33,6 @@ public class Converter
 					return;
 				}
 				File add = new File(args[1]);
-//				System.out.println(add);
 				jit.add(add);
 				break;
 
@@ -76,22 +81,5 @@ public class Converter
 				System.out.println("Not a jit command");
 			}
 		}
-
-//		jit.init();
-
-//		String path = "src/de/oth/Jit/ContentStream.java";
-//		String path2 = "src/de/oth/R/convert.txt";
-//		File arg = new File(path);
-//		File arg2 = new File(path2);
-//		jit.add(arg);
-//		jit.add(arg2);
-//		jit.commit("My Commit");
-//		jit.remove(arg2);
-
-		// String path =
-		// ".jit/objects/3cb7981519a6879e91a26780e75214288db46384";
-		// File a = new File(path);
-		// jit.checkout(a);
-
 	}
 }

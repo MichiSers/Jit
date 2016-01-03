@@ -8,35 +8,69 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This class represents a file or directory that is currently in the staging
+ * area and not committed yet.
+ * 
+ * 
+ * @author Michi
+ *
+ */
 public class Mnode implements Serializable
 {
 	/**
-	 * 
+	 * Variables
 	 */
 	private static final long serialVersionUID = 1L;
-	boolean isRoot = false;
-	String message = "";
-	List<Mnode> children;
-	List<Mnode> leafs;
-	File dir;
-	String hash;
-	String target;
-	String name;
+
+	// these are only used by the head node
+	private boolean isRoot = false;
+	private String message = "";
+
+	// here is differentiated between a leaf and a child
+	// for easier working
+	private List<Mnode> children;
+	private List<Mnode> leafs;
+
+	// value of the file path
+	private File dir;
+
+	// hash code of the node
+	private String hash;
+
+	// name is the name of the file without its path
+	private String name;
+
+	// used just to create file paths before putting them into
+	// the new File() method
+	private String target;
 
 	public Mnode(File dir)
 	{
 		children = new ArrayList<Mnode>();
 		leafs = new ArrayList<Mnode>();
 		this.dir = dir;
-
 		name = dir.getName();
 	}
 
+	/**
+	 * Checks if file is a leaf
+	 * 
+	 * @return true/false
+	 */
 	public boolean isLeaf()
 	{
 		return children.isEmpty() && leafs.isEmpty();
 	}
 
+	/**
+	 * Adds an element to the tree by recursively adding directories from the
+	 * top.
+	 * 
+	 * @param files
+	 *            List of files that represent the paths of all directories that
+	 *            need to be added
+	 */
 	public void addElement(List<File> files)
 	{
 		int index = files.size() - 1;
@@ -54,7 +88,6 @@ public class Mnode implements Serializable
 		{
 			if (!(children.contains(currentChild)))
 			{
-
 				children.add(currentChild);
 				currentChild.addElement(files);
 			} else
@@ -65,38 +98,41 @@ public class Mnode implements Serializable
 		}
 	}
 
+	/**
+	 * Removes a file from the tree, similar to adding it. Recursively checks if
+	 * nodes don't have children and deletes them.
+	 * 
+	 * @param files
+	 *            Files that represent the path like in 'add()'
+	 */
 	public void removeElement(List<File> files)
 	{
 		int index = files.size() - 1;
-		// System.out.println(files.get(index));
 		Mnode currentNode = new Mnode(files.get(index));
 		files.remove(index);
 		index--;
 		if (index < 0)
 		{
 			int i = leafs.indexOf(currentNode);
-			Mnode org = leafs.get(i);
-			System.out.println(org);
-			System.out.println("removing " + leafs.get(i));
 			leafs.remove(i);
 		} else
 		{
 			int i = children.indexOf(currentNode);
-			Mnode org = children.get(i);
-			System.out.println(org);
 			children.get(i).removeElement(files);
 			if (children.get(i).children.isEmpty() && children.get(i).leafs.isEmpty())
 			{
-				System.out.println("removing " + children.get(i));
 				children.remove(i);
 			}
 		}
 	}
 
+	/**
+	 * Creates the hash objects in the jit/objects directory. Recursively starts
+	 * from the bottom and works to the top. Creates a dummy file for folders
+	 * that contains the hashes of the folders children.
+	 */
 	public void computeHash()
 	{
-		System.out.println("Computing File " + dir.toString());
-
 		for (Mnode n : leafs)
 		{
 			n.computeHash();
@@ -115,7 +151,6 @@ public class Mnode implements Serializable
 
 			if (!dir.isFile())
 			{
-				System.out.println(dir + "Is no file");
 				return;
 			}
 
@@ -125,10 +160,6 @@ public class Mnode implements Serializable
 				fileInputStream.read(bFile);
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
-				System.out.println("Leaf: " + hash);
-
-				System.out.println("\n");
-
 			} catch (Exception e)
 			{
 				e.printStackTrace();
@@ -147,20 +178,17 @@ public class Mnode implements Serializable
 			}
 		} else
 		{
-
 			List<String> lines = new ArrayList<String>();
-			if (!(isRoot))
+			if (!(isRoot()))
 			{
 				lines.add("Directory");
 			} else
 			{
-				lines.add(message);
+				lines.add(getMessage());
 			}
 			for (Mnode k : leafs)
 			{
-				// System.out.println(n.hash);
 				lines.add("File;" + k.hash + ";" + k.name);
-
 			}
 
 			for (Mnode k : children)
@@ -191,8 +219,6 @@ public class Mnode implements Serializable
 				fileInputStream.close();
 				hash = HashAlgorithmExample.byteArrayToHexString(bFile);
 				dummy.delete();
-				System.out.println("Child: " + hash);
-				System.out.println("\n");
 
 			} catch (Exception e)
 			{
@@ -214,10 +240,11 @@ public class Mnode implements Serializable
 
 	}
 
+	/**
+	 * Prints a node and its children. Just for testing purposes.
+	 */
 	public void printNode()
 	{
-		System.out.println(dir);
-
 		for (Mnode n : leafs)
 		{
 			n.printNode();
@@ -227,9 +254,11 @@ public class Mnode implements Serializable
 		{
 			n.printNode();
 		}
-
 	}
 
+	/**
+	 * Eclipse generated hashCode.
+	 */
 	@Override
 	public int hashCode()
 	{
@@ -240,6 +269,10 @@ public class Mnode implements Serializable
 		return result;
 	}
 
+	/**
+	 * Eclipse generated equals. I don't want to compare by hash so I left that
+	 * out.
+	 */
 	@Override
 	public boolean equals(Object obj)
 	{
@@ -260,18 +293,39 @@ public class Mnode implements Serializable
 		{
 			return false;
 		}
-		// if (hash == null)
-		// {
-		// if (other.hash != null)
-		// return false;
-		// } else if (!hash.equals(other.hash))
-		// return false;
 		return true;
 	}
 
+	/**
+	 * toString
+	 */
 	@Override
 	public String toString()
 	{
 		return name;
+	}
+	
+	/**
+	 * Getters and Setters Here
+	 */
+
+	public boolean isRoot()
+	{
+		return isRoot;
+	}
+
+	public void setRoot(boolean isRoot)
+	{
+		this.isRoot = isRoot;
+	}
+
+	public String getMessage()
+	{
+		return message;
+	}
+
+	public void setMessage(String message)
+	{
+		this.message = message;
 	}
 }

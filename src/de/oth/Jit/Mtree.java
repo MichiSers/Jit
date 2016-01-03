@@ -5,22 +5,32 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * The tree storing the folders and files in the 
+ * staging area before committing.
+ * 
+ * @author Michi
+ *
+ */
 public class Mtree implements Serializable
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
-	public Mnode root;
+	private Mnode root;
 	private List<File> files;
 
 	public Mtree(Mnode root)
 	{
-
 		this.root = root;
-		root.isRoot = true;
+		root.setRoot(true);
 	}
 
+	/**
+	 * Adds a new element.
+	 * Separates the file path into its sub directories.
+	 * 
+	 * @param path	The File to add
+	 */
 	public void addElement(File path)
 	{
 		files = new ArrayList<File>();
@@ -28,13 +38,17 @@ public class Mtree implements Serializable
 		while (path != null)
 		{
 			files.add(path);
-			// System.out.println(path.toString());
 			path = path.getParentFile();
 		}
-
 		root.addElement(files);
 	}
 
+	/**
+	 * Remove a element.
+	 * Separates the file path into its sub directories.
+	 * 
+	 * @param path	The File to remove
+	 */
 	public void removeElement(File path)
 	{
 		files = new ArrayList<File>();
@@ -44,18 +58,23 @@ public class Mtree implements Serializable
 			files.add(path);
 			path = path.getParentFile();
 		}
-
-		String names[] = files.get(files.size() - 1).toString().split("\\\\");
 		root.removeElement(files);
-
 	}
 
+	/**
+	 * Creates the hash objects.
+	 * 
+	 * @param message	A message to put into the commit file
+	 */
 	public void computeHash(String message)
 	{
-		root.message = message;
+		root.setMessage(message);
 		root.computeHash();
 	}
 
+	/**
+	 * Prints the tree
+	 */
 	public void print()
 	{
 		root.printNode();
